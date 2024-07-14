@@ -1,60 +1,88 @@
 package main
 
 import (
-	"encoding/json"
+	"context"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	gcp "scheduler/gcp"
-	utils "scheduler/utils"
+	"scheduler/utils"
+
+	"github.com/labstack/echo/v4"
 )
 
 const port = ":5432"
+const gcp_res = "Action sent to gcp, may take a few minutes to apply"
 
-func execCmd(w http.ResponseWriter, r *http.Request) {
-	instance := r.PathValue("inst_name")
-	values := gcp.Action(r.PathValue("action"))
+type handler struct {
+	ch chan []string
+}
 
-	if values == nil {
-		http.Error(w, "Invalid action", http.StatusBadRequest)
-		return
+func (h *handler) execCmd(c echo.Context) error {
+
+	params := new(utils.Params)
+	if err := c.Bind(params); err != nil {
+		return err
 	}
 
-	gcp.CallGCP(values, instance)
+	instance := params.Instance
+	values := gcp.Action(params.Action)
 
-	res_ := utils.S200("Action sent to gcp, may take a few minutes to apply")
-	a, err := json.Marshal(res_)
-	if err != nil {
-		log.Println(err)
-	}
+	log.Println(values, instance)
+	values = append(values, instance)
+	log.Println(values)
+	h.ch <- values
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(a)
+	return c.JSON(http.StatusOK, utils.S200(gcp_res))
 
 }
 
-func health(w http.ResponseWriter, r *http.Request) {
-	pa := utils.S200("up")
-	log.Println(pa)
-	j, err := json.Marshal(pa)
-	if err != nil {
-		log.Println("Something is wrong ...")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(j)
-
+func (h *handler) health(c echo.Context) error {
 	log.Println("Everything is fine ...")
+	return c.JSON(http.StatusOK, utils.S200("up"))
 }
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /{action}/{inst_name}", execCmd)
-	mux.HandleFunc("GET /health", health)
+	ch := make(chan []string, 1)
 
-	log.Println("Listening ...")
-	err := http.ListenAndServe(port, mux)
-	log.Fatal(err)
+	h := &handler{ch: ch}
+	e := echo.New()
+
+	e.GET("/:action/:inst_name", h.execCmd)
+	e.GET("/health", h.health)
+
+	go func() {
+		err := e.Start(port)
+		// Close the chan once e.Start returns.
+		close(ch)
+
+		if err != http.ErrServerClosed {
+			e.Logger.Fatal(err)
+		}
+	}()
+
+	ctx, _ := signal.NotifyContext(context.Background(),
+		os.Interrupt,
+		syscall.SIGTERM,
+	)
+
+	// This goroutine listens for the signals and shutdown the echo server.
+	go func() {
+		<-ctx.Done()
+
+		shutDownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		if err := e.Shutdown(shutDownCtx); err != nil {
+			e.Logger.Error(err)
+		}
+	}()
+
+	for cmd := range ch {
+		gcp.CallGCP(cmd)
+	}
 }
