@@ -16,7 +16,9 @@ go run main.go
 - `/:action/:inst_name`: Has 2 params
   - action: can be "start", "stop" , "restart"
   - inst_name: cloud sql instance name.
-- `/:action/:inst_name/:resize`: Has 3 params, two first is same as before.
+- `/:action/:inst_name/:resize`: Has 3 params.
+  - action: set "resize"
+  - inst_name: cloud sql instance name. 
   - resize: can be "up" or "down".
   - Configure `resize.json` with valid machine-types for your instance. 
   `up` for work hours and `down` for non work hours. Example:
@@ -30,7 +32,7 @@ go run main.go
         }
     ]}
   ```
-  To see list valid machines run:
+  To see list valid machines types and specs run:
   ```bash
     gcloud alpha sql tiers list
   ```
