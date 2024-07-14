@@ -27,7 +27,7 @@ func Action(path string) []string {
 	return nil
 }
 
-func CallGCP(values []string) {
+func CallGCP(values []string) (string, error) {
 	cmd_ := []string{"gcloud", cmd_sql, values[0], values[2], values[1]}
 	cmd_l := strings.Join(cmd_, " ")
 
@@ -42,4 +42,6 @@ func CallGCP(values []string) {
 	} else {
 		log.Println("Change applied: ", res, cmd_l)
 	}
+
+	return cmd_l, err
 }
