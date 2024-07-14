@@ -1,0 +1,14 @@
+{
+    "machines": [
+        {
+            "name": "instance_XXX",
+            "up": "machine_type_A",
+            "down": "machine_type_B"
+        },
+        {
+            "name": "instance_XXXX",
+            "up": "machine_type_C",
+            "down": "machine_type_D"
+        }
+    ]
+}
