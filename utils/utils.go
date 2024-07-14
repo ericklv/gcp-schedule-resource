@@ -5,6 +5,11 @@ type Response struct {
 	Message string `json:"message"`
 }
 
+type Params struct {
+	Action   string `param:"action"`
+	Instance string `param:"inst_name"`
+}
+
 func S200(msg string) Response {
 	return Response{200, msg}
 }
