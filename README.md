@@ -37,7 +37,7 @@ go run main.go
     gcloud alpha sql tiers list
   ```
 
-# Create a Cloud Run/Cloud Functions
+# Create a Cloud Run
 1. Configure a google account service in GCP and add Cloud SQL Admin permissions.
 2. Generate a key file as JSON [Ref](https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account). 
 3. Update Dockerfile with this values.  
@@ -49,7 +49,7 @@ go run main.go
 docker build -t {your_name}/{image_name} -f Dockerfile . --progress plain --no-cache
 ```
 5. Upload image to Docker Hub or Artifact Registry in GCP
-6. Make a cloud run o cloud function gen2 with docker image.
+6. Make a cloud run with docker image o create a cloudbuild to generate image and deploy. Remmember enable `CPU is always allocated` in cloud run configuration.
 7. Use Cloud Scheduler to consume the service.
  
 Good luck, have fun.

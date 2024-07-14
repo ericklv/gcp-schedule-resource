@@ -5,7 +5,7 @@ COPY go.mod .
 COPY main.go .
 COPY gcp ./gcp
 COPY utils ./utils
-RUN go mod download
+RUN go mod tidy
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o myapp .
 
