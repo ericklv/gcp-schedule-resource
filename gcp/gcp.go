@@ -38,8 +38,8 @@ func CallGCP(values []string) {
 	res, err := cmd.Output()
 
 	if err != nil {
-		log.Println("Something is wrong")
+		log.Println("Something is wrong", cmd_l)
 	} else {
-		log.Println("Change applied: ", res)
+		log.Println("Change applied: ", res, cmd_l)
 	}
 }
