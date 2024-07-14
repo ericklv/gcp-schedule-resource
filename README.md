@@ -56,7 +56,8 @@ go run main.go
 docker build -t {your_name}/{image_name} -f Dockerfile . --progress plain --no-cache
 ```
 5. Upload image to Docker Hub or Artifact Registry in GCP
-6. Make a cloud run with docker image o create a cloudbuild to generate image and deploy. Remmember enable `CPU is always allocated` in cloud run configuration.
+6. Make a cloud run with docker image o create a cloudbuild to generate image and deploy. 
+  - Remmember enable `CPU is always allocated` in cloud run configuration if use `main` branch (for goroutines works correctly). 
 7. Use Cloud Scheduler to consume the service.
  
 Good luck, have fun.
