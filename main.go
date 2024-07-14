@@ -33,12 +33,11 @@ func (h *handler) execCmd(c echo.Context) error {
 	instance := params.Instance
 	values := gcp.Action(params.Action)
 
-	resize := utils.GetRezise(instance, params.Resize)
-	if len(resize) > 1 {
-		values[1] = strings.Join([]string{values[1], resize}, "")
+	if values == nil {
+		return c.JSON(http.StatusBadRequest, utils.S4xx("Invalid action"))
 	}
-	values = append(values, instance)
 
+	values = append(values, instance)
 	h.ch <- values
 
 	return c.JSON(http.StatusOK, utils.S200(gcp_res))
