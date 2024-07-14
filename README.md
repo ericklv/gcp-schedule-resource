@@ -3,6 +3,13 @@ This API allows to execute GCloud SDK commands (gcloud) to change the status of 
 
 Using goroutines the command is executed in the background, some commands can take up to 5min to complete.
 
+---
+**NOTE**
+
+If you want to use the API synchronously you can use the api-sync branch
+
+---
+
 # Requirements
 To run needs golang >= 1.22 and Gcloud SDK. Your account must have Cloud SQL Admin permissions.
 
