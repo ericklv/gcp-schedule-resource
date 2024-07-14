@@ -6,7 +6,7 @@ Using goroutines the command is executed in the background, some commands can ta
 ---
 **NOTE**
 
-If you want to use the API synchronously you can use the api-sync branch
+If you want to use the API synchronously you can use `api-sync` branch
 
 ---
 
