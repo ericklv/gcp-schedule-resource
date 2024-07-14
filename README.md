@@ -1,4 +1,4 @@
-# API for start/stop Cloud SQL instance
+# API for start/stop/restart/resize Cloud SQL instance
 This API allows to execute GCloud SDK commands (gcloud) to change the status of a Cloud SQL instance.
 
 Using goroutines the command is executed in the background, some commands can take up to 5min to complete.
