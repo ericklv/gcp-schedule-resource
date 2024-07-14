@@ -32,9 +32,11 @@ func (h *handler) execCmd(c echo.Context) error {
 	instance := params.Instance
 	values := gcp.Action(params.Action)
 
-	log.Println(values, instance)
+	if values == nil {
+		return c.JSON(http.StatusBadRequest, utils.S4xx("Invalid action"))
+	}
+
 	values = append(values, instance)
-	log.Println(values)
 	h.ch <- values
 
 	return c.JSON(http.StatusOK, utils.S200(gcp_res))
