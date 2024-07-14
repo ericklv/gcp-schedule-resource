@@ -1,19 +1,53 @@
 # API for start/stop Cloud SQL instance
-This API use gcloud in background to change status in cloud sql instances.
+This API allows to execute GCloud SDK commands (gcloud) to change the status of a Cloud SQL instance.
 
-To run needs golang >= 1.22.5 and Gcloud SDK. Your account must have Cloud SQL Admin permissions.
+Using goroutines the command is executed in the background, some commands can take up to 5min to complete.
+
+# Requirements
+To run needs golang >= 1.22 and Gcloud SDK. Your account must have Cloud SQL Admin permissions.
 
 To run in local use (default port is 5432): 
 ```bash
 go run main.go
 ```
-For docker, configure a google account service in GCP, then add Cloud SQL Admin permissions.
-- Generate a key file as JSON [Ref](https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account). To generate a docker image update Dockerfile with this values.
-- Generate image with (see logs if your account service has any permissions problem):
+
+# API
+- `/health` : check if API is enabled.
+- `/:action/:inst_name`: Has 2 params
+  - action: can be "start", "stop" , "restart"
+  - inst_name: cloud sql instance name.
+- `/:action/:inst_name/:resize`: Has 3 params, two first is same as before.
+  - resize: can be "up" or "down".
+  - Configure `resize.json` with valid machine-types for your instance. 
+  `up` for work hours and `down` for non work hours. Example:
+  ```json
+    {
+    "machines": [
+        {
+            "name": "awesome-machine",
+            "up": "db-n1-standard-32",
+            "down": "db-n1-standard-2"
+        }
+    ]}
+  ```
+  To see list valid machines run:
+  ```bash
+    gcloud alpha sql tiers list
+  ```
+
+# Create a Cloud Run/Cloud Functions
+1. Configure a google account service in GCP and add Cloud SQL Admin permissions.
+2. Generate a key file as JSON [Ref](https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account). 
+3. Update Dockerfile with this values.  
+   - `key-file` is your JSON  
+   - `project` is project-id of instances.
+   - `activate-service-account` is your google account service.
+4. Generate image with (see logs if your account service has any permissions problem):
 ```bash
 docker build -t {your_name}/{image_name} -f Dockerfile . --progress plain --no-cache
 ```
-
-Make a cloud run o cloud function gen2 with docker image, call this service with Cloud Scheduler
+5. Upload image to Docker Hub or Artifact Registry in GCP
+6. Make a cloud run o cloud function gen2 with docker image.
+7. Use Cloud Scheduler to consume the service.
  
 Good luck, have fun.
