@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -32,9 +33,12 @@ func (h *handler) execCmd(c echo.Context) error {
 	instance := params.Instance
 	values := gcp.Action(params.Action)
 
-	log.Println(values, instance)
+	resize := utils.GetRezise(instance, params.Resize)
+	if len(resize) > 1 {
+		values[1] = strings.Join([]string{values[1], resize}, "")
+	}
 	values = append(values, instance)
-	log.Println(values)
+
 	h.ch <- values
 
 	return c.JSON(http.StatusOK, utils.S200(gcp_res))
@@ -53,6 +57,7 @@ func main() {
 	e := echo.New()
 
 	e.GET("/:action/:inst_name", h.execCmd)
+	e.GET("/:action/:inst_name/:resize", h.execCmd)
 	e.GET("/health", h.health)
 
 	go func() {

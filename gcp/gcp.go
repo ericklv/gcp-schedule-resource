@@ -11,6 +11,7 @@ const start_stop = "patch"
 const restart = "restart"
 const start = "--activation-policy=ALWAYS"
 const stop = "--activation-policy=NEVER"
+const tier = "--tier="
 
 func Action(path string) []string {
 	switch path {
@@ -18,6 +19,8 @@ func Action(path string) []string {
 		return []string{start_stop, start}
 	case "stop":
 		return []string{start_stop, stop}
+	case "resize":
+		return []string{start_stop, tier}
 	case "restart":
 		return []string{restart, ""}
 	}
