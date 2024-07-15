@@ -6,7 +6,7 @@ Using goroutines the command is executed in the background, some commands can ta
 ---
 **NOTE**
 
-If you want to use the API synchronously you can use the api-sync branch
+If you want to use the API synchronously you can use `api-sync` branch
 
 ---
 
@@ -56,7 +56,7 @@ go run main.go
 docker build -t {your_name}/{image_name} -f Dockerfile . --progress plain --no-cache
 ```
 5. Upload image to Docker Hub or Artifact Registry in GCP
-6. Make a cloud run with docker image o create a cloudbuild to generate image and deploy. Remmember enable `CPU is always allocated` in cloud run configuration.
+6. Make a cloud run with docker image o create a cloudbuild to generate image and deploy.
 7. Use Cloud Scheduler to consume the service.
  
 Good luck, have fun.
