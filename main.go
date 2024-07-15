@@ -22,7 +22,7 @@ func execCmd(c echo.Context) error {
 	}
 
 	instance := params.Instance
-	values := gcp.Action(params.Action)
+	values := gcp.Action(*params)
 
 	if values == nil {
 		return c.JSON(http.StatusBadRequest, utils.S4xx("Invalid action"))

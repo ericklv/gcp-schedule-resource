@@ -3,6 +3,7 @@ package gcp
 import (
 	"log"
 	"os/exec"
+	"scheduler/utils"
 	"strings"
 )
 
@@ -13,14 +14,19 @@ const start = "--activation-policy=ALWAYS"
 const stop = "--activation-policy=NEVER"
 const tier = "--tier="
 
-func Action(path string) []string {
-	switch path {
+func getTier(p utils.Params) string {
+	tier_ := []string{tier, utils.GetRezise(p.Instance, p.Resize)}
+	return strings.Join(tier_, "")
+}
+
+func Action(p utils.Params) []string {
+	switch p.Action {
 	case "start":
 		return []string{start_stop, start}
 	case "stop":
 		return []string{start_stop, stop}
 	case "resize":
-		return []string{start_stop, tier}
+		return []string{start_stop, getTier(p)}
 	case "restart":
 		return []string{restart, ""}
 	}
