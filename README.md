@@ -15,6 +15,7 @@ To run needs golang >= 1.22 and Gcloud SDK. Your account must have Cloud SQL Adm
 
 To run in local use (default port is 5432): 
 ```bash
+go mod tidy
 go run main.go
 ```
 
